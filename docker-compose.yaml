@@ -1,0 +1,19 @@
+version: '3'
+services:
+  redis:  
+    image: redis:6.2.6-alpine
+    command:
+#      - 'redis-server'
+#      - '--loglevel ${REDIS_LOGLEVEL:-warning}'
+#      - '--databases 2'
+#      - '--save 900 1'
+#      - '--save 300 10'
+#      - '--save 60 10000'
+#      - '--maxmemory ${REDIS_MAXMEM:-50mb}'
+#      - '--maxmemory-policy ${REDIS_POLICY:-noeviction}'
+      - '--requirepass ${REDIS_PASS}'
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - /tmp/chat-sample/data:/data
+    ports:
+      - "6379"

@@ -1,16 +1,14 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.0'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'jacoco'
 }
 
-description = "msg persist"
+description = "redis chat"
 group 'ru.mrs'
 version '0.0.1-SNAPSHOT'
-sourceCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_1_8
 compileJava   {
-    targetCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 repositories {
@@ -24,27 +22,28 @@ configurations {
 
 ext {
     fingBugs_version = "3.0.2"
-    h2_version = "1.4.200"
+    lombok_version = '1.18.22'
+    lang3_version = "3.12.0"
+    mockito_version = "4.2.0"
+    log4j_version = "2.17.0"
+    jetty9_version = "9.4.44.v20210927"
 }
 
 dependencies {
     compileOnly "com.google.code.findbugs:jsr305:$fingBugs_version"
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-artemis'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'org.postgresql:postgresql'
-    implementation 'org.flywaydb:flyway-core'
-    implementation 'org.apache.commons:commons-lang3'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//    implementation "com.h2database:h2:$h2_version"
-//    implementation 'org.springframework.boot:spring-boot-starter-validation'
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
-//    testImplementation 'org.springframework.security:spring-security-test'
-//    testImplementation 'org.junit.jupiter:junit-jupiter'
-//    testImplementation 'org.mockito:mockito-junit-jupiter'
-//    testImplementation 'org.mockito:mockito-inline'
+    compileOnly "org.projectlombok:lombok:$lombok_version"
+    annotationProcessor "org.projectlombok:lombok:$lombok_version"
+//    testImplementation "org.apache.commons:commons-lang3:$lang3_version"
+//    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit58_version"
+//    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit58_version"
+//    testImplementation "org.mockito:mockito-core:$mockito_version"
+//    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
+//    implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
+    implementation "org.eclipse.jetty:jetty-server:$jetty9_version"
+    implementation "org.eclipse.jetty:jetty-webapp:$jetty9_version"
+    implementation "org.eclipse.jetty.websocket:websocket-servlet:$jetty9_version"
+    implementation "org.eclipse.jetty.websocket:websocket-server:$jetty9_version"
+    implementation 'redis.clients:jedis:4.0.0'
 }
 
 test {
