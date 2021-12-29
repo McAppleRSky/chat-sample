@@ -1,17 +1,18 @@
-package chat._1_servlet;
+package rarus.chat._1_servlet;
 
-import chat._3_webSocket.ChatWebSocket;
-import chat._2_service.ChatService;
+import rarus.chat._2_webSocket.ChatWebSocket;
+import rarus.chat._3_service.ChatService;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 
 import javax.servlet.annotation.WebServlet;
-//import jakarta.servlet.annotation.WebServlet;
 
 
 @WebServlet(name = "WebSocketChatServlet", urlPatterns = {"/chat"})
 public class WebSocketChatServlet extends WebSocketServlet {
-    private final static int LOGOUT_TIME = 10 * 60 * 1000;
+
+    public static final String PATH = "/chat";
+    private static final int LOGOUT_TIME = 10 * 60 * 1000;
     private final ChatService chatService;
 
     public WebSocketChatServlet() {
@@ -23,4 +24,5 @@ public class WebSocketChatServlet extends WebSocketServlet {
         factory.getPolicy().setIdleTimeout(LOGOUT_TIME);
         factory.setCreator((req, resp) -> new ChatWebSocket(chatService));
     }
+
 }

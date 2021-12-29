@@ -1,4 +1,4 @@
-package chat.model;
+package rarus.chat.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Message {
+    private String name;
     private LocalDateTime localDateTime;
     private String text;
 }
