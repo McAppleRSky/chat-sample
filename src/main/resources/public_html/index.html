@@ -1,23 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <title>Enter chat</title>
-</head>
+    <meta charset="UTF-8"/>
+    <title>L4.1: Jetty WebSocket Chat</title>
+    <script type="text/javascript">
+        var ws;
+        var usr;
 
-<body>
-  <div style="visibility: visible; overflow: visible; position: absolute; left: 100px; top: 100px;">
-    <label>Enter chat as nic:</label>
-    <form action="/login" method="POST">
-      <label for="login">user name:</label>
-      <input type="text" id="login" name="login">
-      <!-- <label for="password">user pass:</label>"
-      <input type="text" id="password" name="password"> -->
-      <input type="submit" value="Enter">
+        function init() {
+            ws = new WebSocket("ws://localhost:8080/chat");
+            ws.onopen = function (event) {
+
+            }
+            ws.onmessage = function (event) {
+                var $textarea = document.getElementById("messages");
+                $textarea.value = $textarea.value + event.data + "\n";
+            }
+            ws.onclose = function (event) {
+
+            }
+        };
+        function sendLogin(){
+          let hideClass = "hidden";
+          let auth = document.getElementById("auth");
+          let chat = document.getElementById("chat");
+          let login = document.getElementById("login");
+          let greeting = document.getElementById("greeting");
+          if (login.value.empty) {
+            return;
+          } else {
+            usr = {login:login.value}
+            ws.send(JSON.stringify(usr));
+            auth.classList.add(hideClass);
+            chat.classList.remove(hideClass);
+            greeting.textContent = "Welcome to chat, " + login.value;
+          }
+        }
+
+        function sendMessage() {
+            var messageField = document.getElementById("message");
+            // var userName = usr.login;
+              // document.getElementById("username");
+            let outgoingMessage = //userName + ":" +
+              messageField.value;
+            ws.send(outgoingMessage);
+            messageField.value = '';
+        }
+    </script>
+    <style media="screen">
+      .hidden {
+        visibility: hidden;
+        display: none;
+      }
+    </style>
+</head>
+<body onload="init();">
+<div id="body">
+  <div id="auth">
+    <div style="visibility: visible; overflow: visible; position: absolute; left: 100px; top: 100px;">
+      <label>Enter chat as nic:</label>
+      <form action="/chat" onsubmit="sendLogin();return false;">
+        <label for="login">user name:</label>
+        <input type="text" id="login" name="login">
+        <!-- <label for="password">user pass:</label>"
+        <input type="text" id="password" name="password"> -->
+        <input type="submit" value="Enter">
+      </form>
+    </div>
+  </div>
+  <div id="chat" class="hidden">
+    <div id="menu">
+        <p id="greeting">
+            <!-- <input id="username" value="anonymous"/> -->
+        </p>
+
+        <div style="clear: both"></div>
+    </div>
+
+    <div id="chatbox">
+        <textarea id="messages" rows="20" cols="50" readonly="readonly"></textarea>
+    </div>
+
+    <form name="message" action="">
+        <input name="usermsg" type="text" id="message" size="40"/>
+        <input type="button" name="submit" value="Send..." onclick="sendMessage();"/>
     </form>
   </div>
+</div>
 </body>
-
 </html>

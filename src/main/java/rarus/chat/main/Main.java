@@ -1,7 +1,5 @@
 package rarus.chat.main;
 
-import freemarker.template.Configuration;
-import rarus.chat._1_servlet.LoginServlet;
 import rarus.chat._1_servlet.WebSocketChatServlet;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -17,9 +15,10 @@ public class Main {
 
     public static String PUBLIC_HTML_RESOURCE = Main.class.getClassLoader().getResource("public_html").getPath();
 //    public static String HTML_RESOURCE = Main.class.getClassLoader().getResource("html").getPath();
-    public static Configuration freemarkerConfiguration = new Configuration(freemarker.template.Configuration.VERSION_2_3_27);
+//    public static Configuration freemarkerConfiguration = new Configuration(freemarker.template.Configuration.VERSION_2_3_27);
     static {
-//        HTML_RESOURCE = HTML_RESOURCE.substring(1, HTML_RESOURCE.length()); // windows path fix
+        PUBLIC_HTML_RESOURCE = PUBLIC_HTML_RESOURCE.substring(1, PUBLIC_HTML_RESOURCE.length()); // windows path fix
+/*
         try {
             freemarkerConfiguration
                     .setDirectoryForTemplateLoading(
@@ -31,6 +30,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+*/
     }
 
     public static void main(String[] args) throws Exception {
@@ -38,7 +38,7 @@ public class Main {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
         context.addServlet(new ServletHolder( new WebSocketChatServlet() ), WebSocketChatServlet.PATH);
-        context.addServlet(new ServletHolder( new LoginServlet() ), LoginServlet.PATH);
+//        context.addServlet(new ServletHolder( new LoginServlet() ), LoginServlet.PATH);
 
         ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setDirectoriesListed(true);
