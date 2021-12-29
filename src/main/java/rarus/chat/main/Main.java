@@ -7,46 +7,52 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import redis.clients.jedis.JedisPool;
 
-import java.io.File;
-import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Main {
+import static org.apache.commons.lang3.RandomUtils.nextInt;
 
-    public static String PUBLIC_HTML_RESOURCE = Main.class.getClassLoader().getResource("public_html").getPath();
-//    public static String HTML_RESOURCE = Main.class.getClassLoader().getResource("html").getPath();
-//    public static Configuration freemarkerConfiguration = new Configuration(freemarker.template.Configuration.VERSION_2_3_27);
+public class Main extends MainConfiguration {
+
+    public static final Map context = new HashMap();
+
     static {
-        PUBLIC_HTML_RESOURCE = PUBLIC_HTML_RESOURCE.substring(1, PUBLIC_HTML_RESOURCE.length()); // windows path fix
-/*
-        try {
-            freemarkerConfiguration
-                    .setDirectoryForTemplateLoading(
-                            new File(
-                                    Main.class
-                                            .getClassLoader()
-                                            .getResource("template")
-                                            .getPath()));
-        } catch (IOException e) {
-            e.printStackTrace();
+        {
+            String publicHtml = Main.class.getClassLoader().getResource("public_html").getPath();
+            publicHtml = publicHtml.substring(1, publicHtml.length()); // windows path fix
+            context.put("public_html", Main.class.getClassLoader().getResource("public_html").getPath());
         }
-*/
+        context.put(ConfigHide.class, configureHide());
+        {
+            context.put(Config.class, configureChat());
+            Config config = (Config) context.get(Config.class);
+            config.setProperty("room", String.valueOf(nextInt()));
+        }
+        context.put(JedisPool.class, configureJedis());
+        context.put(DateTimeFormatter.class, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     public static void main(String[] args) throws Exception {
-        Server server = new Server(8080);
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
-        context.addServlet(new ServletHolder( new WebSocketChatServlet() ), WebSocketChatServlet.PATH);
-//        context.addServlet(new ServletHolder( new LoginServlet() ), LoginServlet.PATH);
+        ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+
+        servletContextHandler.addServlet(new ServletHolder( new WebSocketChatServlet() ), WebSocketChatServlet.PATH);
 
         ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setDirectoriesListed(true);
 
-        resource_handler.setResourceBase(PUBLIC_HTML_RESOURCE);
+        resource_handler.setResourceBase((String)context.get("public_html"));
 
         HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{resource_handler, context});
+        handlers.setHandlers(new Handler[]{resource_handler, servletContextHandler});
+
+        Config config = (Config)context.get(Config.class);
+        int port = Integer.parseInt(config.getProperty("server-port"));
+        Server server = new Server(port);
+
         server.setHandler(handlers);
         System.out.println("Server started");
         server.start();

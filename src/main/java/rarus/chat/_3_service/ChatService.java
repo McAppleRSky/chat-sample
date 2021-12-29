@@ -1,6 +1,6 @@
 package rarus.chat._3_service;
 
-import rarus.chat._2_webSocket.ChatWebSocket;
+import rarus.chat._2_webSocket.WebSocketChatInstance;
 
 import java.util.Collections;
 import java.util.Set;
@@ -10,14 +10,14 @@ import java.util.concurrent.ConcurrentHashMap;
 // https://learn.javascript.ru/websockets
 public class ChatService {
 
-    private Set<ChatWebSocket> webSockets;
+    private Set<WebSocketChatInstance> webSockets;
 
     public ChatService() {
         this.webSockets = Collections.newSetFromMap(new ConcurrentHashMap<>());
     }
 
     public void sendMessage(String data) {
-        for (ChatWebSocket user : webSockets) {
+        for (WebSocketChatInstance user : webSockets) {
             try {
                 user.sendToClientString(data);
             } catch (Exception e) {
@@ -26,11 +26,11 @@ public class ChatService {
         }
     }
 
-    public void add(ChatWebSocket webSocket) {
+    public void add(WebSocketChatInstance webSocket) {
         webSockets.add(webSocket);
     }
 
-    public void remove(ChatWebSocket webSocket) {
+    public void remove(WebSocketChatInstance webSocket) {
         webSockets.remove(webSocket);
     }
 
