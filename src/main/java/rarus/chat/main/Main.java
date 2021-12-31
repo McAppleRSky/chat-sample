@@ -7,6 +7,8 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import rarus.chat._3_service.ChatService;
+import rarus.chat._3_service.ChatServiceImpl;
 import redis.clients.jedis.JedisPool;
 
 import java.time.format.DateTimeFormatter;
@@ -35,6 +37,7 @@ public class Main extends MainConfiguration {
         }
         context.put(JedisPool.class, configureJedis());
         context.put(DateTimeFormatter.class, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        context.put(ChatService.class, new ChatServiceImpl());
     }
 
     public static void main(String[] args) throws Exception {

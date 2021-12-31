@@ -15,11 +15,9 @@ public class WebSocketChatServlet extends WebSocketServlet {
 
     public static final String PATH = "/chat";
     private static final int LOGOUT_TIME = 10 * 60 * 1000;
-    private final ChatService chatService;
     private final String room;
 
     public WebSocketChatServlet() {
-        this.chatService = new ChatService();
         Config config = (Config) Main.context.get(Config.class);
         this.room = config.getProperty("room");
     }
@@ -27,7 +25,7 @@ public class WebSocketChatServlet extends WebSocketServlet {
     @Override
     public void configure(WebSocketServletFactory factory) {
         factory.getPolicy().setIdleTimeout(LOGOUT_TIME);
-        factory.setCreator((req, resp) -> new WebSocketChatInstance(chatService, room));
+        factory.setCreator((req, resp) -> new WebSocketChatInstance(room));
     }
 
 }
