@@ -8,15 +8,20 @@
 
         function init() {
             ws = new WebSocket("ws://localhost:8080/chat");
+
             ws.onopen = function (event) {
-
             }
+
             ws.onmessage = function (event) {
-                var $textarea = document.getElementById("messages");
-                $textarea.value = $textarea.value + event.data + "\n";
+                let messages = document.getElementById("messages");
+                let message = JSON.parse(event.data);
+                messages.value = messages.value
+                 + message.date_time + " "
+                 + message.name + " : "
+                 + message.text + "\n";
             }
-            ws.onclose = function (event) {
 
+            ws.onclose = function (event) {
             }
         };
         function sendLogin(){
@@ -37,13 +42,16 @@
         }
 
         function sendMessage() {
-            var messageField = document.getElementById("message");
+            let message = document.getElementById("message");
             // var userName = usr.login;
               // document.getElementById("username");
-            let outgoingMessage = //userName + ":" +
-              messageField.value;
-            ws.send(outgoingMessage);
-            messageField.value = '';
+            if (message.value.empty) {
+              return;
+            } else {
+              let msg = {message:message.value}
+              ws.send(JSON.stringify(msg));
+              message.value = '';
+            }
         }
     </script>
     <style media="screen">

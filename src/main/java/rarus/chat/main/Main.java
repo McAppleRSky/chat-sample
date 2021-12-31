@@ -13,7 +13,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.commons.lang3.RandomUtils.nextInt;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+
+// https://www.youtube.com/watch?v=AimUYjKs3pQ
 
 public class Main extends MainConfiguration {
 
@@ -23,13 +25,13 @@ public class Main extends MainConfiguration {
         {
             String publicHtml = Main.class.getClassLoader().getResource("public_html").getPath();
             publicHtml = publicHtml.substring(1, publicHtml.length()); // windows path fix
-            context.put("public_html", Main.class.getClassLoader().getResource("public_html").getPath());
+            context.put("public_html", publicHtml);
         }
         context.put(ConfigHide.class, configureHide());
         {
             context.put(Config.class, configureChat());
             Config config = (Config) context.get(Config.class);
-            config.setProperty("room", String.valueOf(nextInt()));
+            config.setProperty("room", randomAlphabetic(4));
         }
         context.put(JedisPool.class, configureJedis());
         context.put(DateTimeFormatter.class, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));

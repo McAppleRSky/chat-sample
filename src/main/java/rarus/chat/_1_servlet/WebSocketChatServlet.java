@@ -16,13 +16,12 @@ public class WebSocketChatServlet extends WebSocketServlet {
     public static final String PATH = "/chat";
     private static final int LOGOUT_TIME = 10 * 60 * 1000;
     private final ChatService chatService;
-    private final int room;
+    private final String room;
 
     public WebSocketChatServlet() {
         this.chatService = new ChatService();
         Config config = (Config) Main.context.get(Config.class);
-        String room = config.getProperty("room");
-        this.room = Integer.parseInt(room);
+        this.room = config.getProperty("room");
     }
 
     @Override

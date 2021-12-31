@@ -13,10 +13,7 @@ import rarus.chat.main.Main;
 import rarus.chat.model.Message;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 
 import static java.time.LocalDateTime.now;
@@ -27,15 +24,15 @@ public class WebSocketChatInstance {
 
     private final ChatService chatService;
     private Session session;
-    private int room;
+    private String room;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private boolean authorized = false;
     private String expectedKey = "login";
     private String userName = null;
     private final DateTimeFormatter dateTimeFormatter = (DateTimeFormatter)Main.context.get(DateTimeFormatter.class);
-    private Jedis jedis = ((JedisPool)Main.context.get(JedisPool.class)).getResource();
+    private final JedisPool jedisPool = (JedisPool) Main.context.get(JedisPool.class);
 
-    public WebSocketChatInstance(ChatService chatService, int room) {
+    public WebSocketChatInstance(ChatService chatService, String room) {
         this.chatService = chatService;
         this.room = room;
     }
@@ -46,9 +43,7 @@ public class WebSocketChatInstance {
         this.session = session;
     }
 
-
     // https://www.baeldung.com/jedis-java-redis-client-library
-
     @OnWebSocketMessage
     public void onMessage(String data) {
         Map<String, String> map;
@@ -57,15 +52,17 @@ public class WebSocketChatInstance {
             String value = map.get(expectedKey);
             if (value!=null && !value.isEmpty()){
                 if (authorized) {
-                    jedis.lpush(
-                            objectMapper.writeValueAsString(
-                                    new Message(
-                                            userName,
-                                            now().format(dateTimeFormatter),
-                                            value) ) );
-                    chatService.sendMessage(
-                            jedis.rpop(
-                                    Integer.toString(room)));
+                    try (Jedis jedisOutput = jedisPool.getResource();Jedis jedisInput = jedisPool.getResource()) {
+                        jedisOutput.lpush(
+                                room,
+                                objectMapper.writeValueAsString(
+                                        new Message(
+                                                userName,
+                                                now().format(dateTimeFormatter),
+                                                value ) ) );
+                        chatService.sendMessage(
+                                jedisInput.rpop(room) );
+                    }
                 } else {
                     userName = value;
                     authorized = true;

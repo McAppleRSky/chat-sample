@@ -29,9 +29,11 @@ ext {
     log4j_version = "2.17.0"
     jetty9_version = "9.4.44.v20210927"
 //    servlet3_version = "3.1.0"
-//    freemarker_version = "2.3.31"
     jackson_version = "2.13.1"
+    slf4j_version = "1.7.32"
+    junit58_version = "5.8.2"
 }
+
 dependencies {
     compileOnly "com.google.code.findbugs:jsr305:$fingBugs_version"
     compileOnly "org.projectlombok:lombok:$lombok_version"
@@ -39,17 +41,15 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
 //    implementation "com.fasterxml.jackson.core:jackson-core:$jackson_version"
 //    implementation "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"
-
     implementation "org.apache.commons:commons-lang3:$lang3_version"
-//    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit58_version"
-//    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit58_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit58_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit58_version"
 //    testImplementation "org.mockito:mockito-core:$mockito_version"
-//    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
-//    implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
     implementation "org.eclipse.jetty:jetty-server:$jetty9_version"
     implementation "org.eclipse.jetty:jetty-webapp:$jetty9_version"
+    implementation "org.slf4j:slf4j-api:$slf4j_version"
+    implementation "org.slf4j:slf4j-simple:$slf4j_version"
 //    compileOnly "javax.servlet:javax.servlet-api:$servlet3_version"
-//    implementation "org.freemarker:freemarker:$freemarker_version"
     implementation "org.eclipse.jetty.websocket:websocket-servlet:$jetty9_version"
     implementation "org.eclipse.jetty.websocket:websocket-server:$jetty9_version"
     implementation 'redis.clients:jedis:4.0.0'
@@ -67,6 +67,7 @@ test {
     useJUnitPlatform()
     finalizedBy jacocoTestReport
 }
+
 jacocoTestReport {
     dependsOn test
 }

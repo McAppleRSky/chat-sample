@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.time.Duration;
 import java.util.Properties;
 
+@SuppressWarnings("deprecation")
 public class MainConfiguration {
 
     protected static ConfigHide configureHide(){
