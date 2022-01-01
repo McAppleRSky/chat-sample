@@ -3,6 +3,7 @@ package rarus.chat._2_webSocket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j;
 import rarus.chat._3_service.ChatService;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -14,6 +15,7 @@ import rarus.chat.model.Message;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,15 +23,17 @@ import static java.time.LocalDateTime.now;
 
 @SuppressWarnings("UnusedDeclaration")
 @WebSocket
+//@Log4j
 public class WebSocketChatInstance {
 
     private final ChatService chatService;
     private Session session;
     private String room;
+    private final String archRoom;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private boolean authorized = false;
     private String expectedKey = "login";
-    private String clientName = null;
+    private String clientName = "";
     private final DateTimeFormatter dateTimeFormatter = (DateTimeFormatter)Main.context.get(DateTimeFormatter.class);
     private final JedisPool jedisPool = (JedisPool) Main.context.get(JedisPool.class);
 
@@ -40,6 +44,7 @@ public class WebSocketChatInstance {
     public WebSocketChatInstance(String room) {
         this.chatService = (ChatService)Main.context.get(ChatService.class);
         this.room = room;
+        this.archRoom = room + "-arch";
     }
 
     @OnWebSocketConnect
@@ -78,7 +83,6 @@ public class WebSocketChatInstance {
                                 clientsNames.remove(clientName);
                                 StringBuilder text = new StringBuilder("UserList");
                                 text.append(":");
-
                                 if (clientsNames.isEmpty()) {
                                     text.append(" ")
                                             .append("nobody");
@@ -106,35 +110,66 @@ public class WebSocketChatInstance {
                             break;
                         case ("ShowHistory"):
                             {
-                                int c;
-                                String text;
+                                int c = 0;
+                                String notParseInt = null;
                                 if (values.length == 2) {
                                     try {
                                         c = Integer.parseInt(values[1]);
                                     } catch (NumberFormatException e) {
-                                        text = e.getMessage();
+                                        notParseInt = e.getMessage();
+                                    }
+                                    sendToClient(
+                                            objectMapper.writeValueAsString(
+                                                    new Message(
+                                                            "",
+                                                            now,
+                                                            "ShowHistory: Last " + values[1] + ':'
+                                                             + (notParseInt == null ? "" : notParseInt) ) ) );
+                                    try (Jedis jedis = jedisPool.getResource()) {
+                                        List<String> lastMessages = jedis.lrange(archRoom, 0, c - 1);
+                                        c = lastMessages.size();
+                                        for (int i = c; --i >= 0;) {
+                                            sendToClient(lastMessages.get(i));
+                                        }
                                     }
                                 }
-
                             }
                             break;
                         default:
-                            try (Jedis jedisOutput = jedisPool.getResource(); Jedis jedisInput = jedisPool.getResource()) {
-                                jedisOutput.lpush(
-                                        room,
-                                        objectMapper.writeValueAsString(
-                                                new Message(
-                                                        clientName,
-                                                        now,
-                                                        value)));
-                                chatService.distributionToClients(
-                                        jedisInput.rpop(room));
+                            {
+                                try (Jedis jedis = jedisPool.getResource()) {
+                                    jedis.lpush(
+                                            room,
+                                            objectMapper.writeValueAsString(
+                                                    new Message(
+                                                            clientName,
+                                                            now,
+                                                            value)));
+                                }
+                                String distributingMessage = null;
+                                try (Jedis jedis = jedisPool.getResource()) {
+                                    distributingMessage = jedis.rpop(room);
+                                    chatService.distributionToClients(
+                                            distributingMessage);
+                                }
+                                String archKey = room + "-arch";
+                                try (Jedis jedis = jedisPool.getResource()) {
+                                    jedis.lpush(archKey, distributingMessage);
+                                }
+                                try (Jedis jedis = jedisPool.getResource()) {
+                                    jedis.expire(archKey, 60 * 60 * 24);
+                                }
                             }
                     }
                 } else {
-                    clientName = value;
-                    authorized = true;
-                    expectedKey = "message";
+                    if (chatService.clientAbsent(value)) {
+                        sendToClient(
+                                objectMapper.writeValueAsString(
+                                        new Message(value,"","") ) );
+                        clientName = value;
+                        authorized = true;
+                        expectedKey = "message";
+                    }
                 }
             }
         } catch (JsonMappingException e) {

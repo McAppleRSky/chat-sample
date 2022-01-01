@@ -48,4 +48,14 @@ public class ChatServiceImpl implements ChatService{
         return names;
     }
 
+    @Override
+    public boolean clientAbsent(String name) {
+        for (WebSocketChatInstance client : webSockets) {
+            if (client.getClientName().equals(name)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

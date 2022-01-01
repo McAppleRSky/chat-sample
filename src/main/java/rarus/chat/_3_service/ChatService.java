@@ -19,4 +19,6 @@ public interface ChatService {
 
     Set<String> clientsNames();
 
+    boolean clientAbsent(String name);
+
 }

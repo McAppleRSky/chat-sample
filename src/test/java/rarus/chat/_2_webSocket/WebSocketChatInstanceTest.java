@@ -8,6 +8,7 @@ import rarus.chat.main.Main;
 import rarus.chat.model.Message;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import static java.time.LocalDateTime.now;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
@@ -33,6 +34,35 @@ class WebSocketChatInstanceTest {
         assertEquals(name, messageRecovered.getName());
         assertEquals(dateTime, messageRecovered.getDateTime());
         assertEquals(text, messageRecovered.getText());
+    }
+
+    @Test
+    void testTernaryOrder() {
+        String notParseInt = null;
+        assertEquals(new String(""), "" + (notParseInt == null ? "" : notParseInt));
+        notParseInt = new String("_");
+        assertEquals(new String("_"), "" + (notParseInt == null ? "" : notParseInt));
+    }
+
+    @Test
+    void testReverseFor() {
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add("uno");
+        strings.add("duo");
+        strings.add("tre");
+        strings.add("4");
+        strings.add("5");
+        int c = strings.size();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < c; i++) {
+            stringBuilder.append(strings.get(i));
+        }
+        assertEquals("unoduotre45", stringBuilder.toString());
+        stringBuilder = new StringBuilder();
+        for (int i = c; --i >= 0;) {
+            stringBuilder.append(strings.get(i));
+        }
+        assertEquals("54treduouno", stringBuilder.toString());
     }
 
 }

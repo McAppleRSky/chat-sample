@@ -5,7 +5,7 @@
     <script type="text/javascript">
         var ws;
         var usr;
-
+        var hideClass = "hidden";
         function init() {
             ws = new WebSocket("ws://localhost:8080/chat");
 
@@ -13,19 +13,29 @@
             }
 
             ws.onmessage = function (event) {
-                let messages = document.getElementById("messages");
-                let message = JSON.parse(event.data);
+              let auth = document.getElementById("auth");
+              let chat = document.getElementById("chat");
+              let messages = document.getElementById("messages");
+              let data = JSON.parse(event.data);
+              if (chat.classList.contains("hidden")) {
+                if (data.name == usr.login) {
+                  auth.classList.add(hideClass);
+                  chat.classList.remove(hideClass);
+                  greeting.textContent = "Welcome to chat as " + login.value;
+                }
+              } else {
                 messages.value = messages.value
-                 + message.date_time + " "
-                 + message.name + ": "
-                 + message.text + "\n";
+                 + data.date_time + " "
+                 + data.name + ": "
+                 + data.text + "\n";  
+              }
             }
 
             ws.onclose = function (event) {
             }
         };
         function sendLogin(){
-          let hideClass = "hidden";
+          // let hideClass = "hidden";
           let auth = document.getElementById("auth");
           let chat = document.getElementById("chat");
           let login = document.getElementById("login");
@@ -35,9 +45,9 @@
           } else {
             usr = {login:login.value}
             ws.send(JSON.stringify(usr));
-            auth.classList.add(hideClass);
-            chat.classList.remove(hideClass);
-            greeting.textContent = "Welcome to chat, " + login.value;
+            // auth.classList.add(hideClass);
+            // chat.classList.remove(hideClass);
+            // greeting.textContent = "Welcome to chat, " + login.value;
           }
         }
 
