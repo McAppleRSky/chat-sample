@@ -3,14 +3,13 @@ package rarus.chat._2_webSocket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.log4j.Log4j;
 import rarus.chat._3_service.ChatService;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import rarus.chat.main.Main;
+import rarus.chat.Main;
 import rarus.chat.model.Message;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -34,7 +33,7 @@ public class WebSocketChatInstance {
     private boolean authorized = false;
     private String expectedKey = "login";
     private String clientName = "";
-    private final DateTimeFormatter dateTimeFormatter = (DateTimeFormatter)Main.context.get(DateTimeFormatter.class);
+    private final DateTimeFormatter dateTimeFormatter = (DateTimeFormatter) Main.context.get(DateTimeFormatter.class);
     private final JedisPool jedisPool = (JedisPool) Main.context.get(JedisPool.class);
 
     public String getClientName() {
@@ -53,7 +52,6 @@ public class WebSocketChatInstance {
         this.session = session;
     }
 
-    // https://www.baeldung.com/jedis-java-redis-client-library
     @OnWebSocketMessage
     public void onMessage(String data) {
         Map<String, String> map;

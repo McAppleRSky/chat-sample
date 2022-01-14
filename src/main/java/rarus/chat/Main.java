@@ -1,4 +1,4 @@
-package rarus.chat.main;
+package rarus.chat;
 
 import rarus.chat._1_servlet.WebSocketChatServlet;
 import org.eclipse.jetty.server.Handler;

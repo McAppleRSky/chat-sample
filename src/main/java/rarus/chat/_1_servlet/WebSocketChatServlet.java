@@ -1,11 +1,10 @@
 package rarus.chat._1_servlet;
 
 import rarus.chat._2_webSocket.WebSocketChatInstance;
-import rarus.chat._3_service.ChatService;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
-import rarus.chat.main.Config;
-import rarus.chat.main.Main;
+import rarus.chat.Config;
+import rarus.chat.Main;
 
 import javax.servlet.annotation.WebServlet;
 

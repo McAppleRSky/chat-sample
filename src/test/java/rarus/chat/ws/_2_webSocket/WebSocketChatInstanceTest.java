@@ -1,11 +1,10 @@
-package rarus.chat._2_webSocket;
+package rarus.chat.ws._2_webSocket;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import rarus.chat.main.Main;
-import rarus.chat.model.Message;
+import rarus.chat.ws.main.Main;
+import rarus.chat.ws.model.Message;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

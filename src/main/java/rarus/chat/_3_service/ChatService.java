@@ -2,10 +2,7 @@ package rarus.chat._3_service;
 
 import rarus.chat._2_webSocket.WebSocketChatInstance;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public interface ChatService {
 

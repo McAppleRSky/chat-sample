@@ -1,4 +1,4 @@
-package rarus.chat._3_service;
+package rarus.chat.ws._3_service;
 
 import org.junit.jupiter.api.Test;
 

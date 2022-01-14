@@ -1,4 +1,4 @@
-package rarus.chat.main;
+package rarus.chat;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
